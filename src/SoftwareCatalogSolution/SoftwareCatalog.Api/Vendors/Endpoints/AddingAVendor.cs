@@ -10,10 +10,10 @@ public class AddingAVendor(IDocumentSession session, IValidator<VendorCreateMode
         [FromBody] VendorCreateModel request)
     {
         var validations = await validator.ValidateAsync(request);
-        if (!validations.IsValid)
-        {
-            return BadRequest();
-        }
+        //if (!validations.IsValid)
+        //{
+        //    return BadRequest();
+        //}
         var entity = new VendorEntity
         {
             Id = Guid.NewGuid(),

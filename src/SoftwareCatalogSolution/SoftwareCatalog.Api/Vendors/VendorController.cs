@@ -1,5 +1,0 @@
-﻿namespace SoftwareCatalog.Api.Vendors;
-
-
-
-

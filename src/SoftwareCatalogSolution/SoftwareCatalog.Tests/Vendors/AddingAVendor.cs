@@ -40,4 +40,18 @@ public class AddingAVendor
         Assert.Equal(postBody, getBody);
 
     }
+
+    [Fact]
+    public async Task InputsAreValidated()
+    {
+        var host = await AlbaHost.For<Program>();
+
+
+
+        var postResponse = await host.Scenario(api =>
+        {
+            api.Post.Json(new { }).ToUrl("/vendors");
+            api.StatusCodeShouldBe(400);
+        });
+    }
 }
