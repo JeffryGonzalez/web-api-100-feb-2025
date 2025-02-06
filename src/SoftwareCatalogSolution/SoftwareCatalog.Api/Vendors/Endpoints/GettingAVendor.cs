@@ -1,14 +1,15 @@
 ﻿
 using Marten;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SoftwareCatalog.Api.Vendors.Endpoints;
 
-public class GettingAVendor(IDocumentSession session) : ControllerBase
+public static class GettingAVendor
 {
 
-    [HttpGet("/vendors/{id:guid}")]
-    public async Task<ActionResult> GetVendorAsync([FromRoute] Guid id)
+  
+    public static  async Task<Results<Ok<VendorDetailsResponseModel>, NotFound>> GetVendorAsync(Guid id, IDocumentSession session)
     {
         var response = await session.Query<VendorEntity>()
             .Where(v => v.Id == id)
@@ -17,8 +18,8 @@ public class GettingAVendor(IDocumentSession session) : ControllerBase
 
         return response switch
         {
-            null => NotFound(),
-            _ => Ok(response)
+            null => TypedResults.NotFound(),
+            _ => TypedResults.Ok(response)
         };
     }
 

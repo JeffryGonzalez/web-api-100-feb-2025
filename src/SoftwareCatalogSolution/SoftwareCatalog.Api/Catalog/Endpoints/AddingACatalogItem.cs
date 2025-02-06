@@ -1,16 +1,20 @@
 ﻿using FluentValidation;
 using Marten;
 using Microsoft.AspNetCore.Mvc;
+using SoftwareCatalog.Api.Vendors;
 
 namespace SoftwareCatalog.Api.Catalog.Endpoints;
-
+[Tags("Catalog")]
+[Produces("application/json")]
+[ProducesResponseType(201)]
+[ProducesResponseType(400)]
 public class AddingACatalogItem(IDocumentSession session, IValidator<CatalogItemRequestModel> validator) : ControllerBase
 {
     // GET /catalog/pizza -> 404
 
 
     [HttpPost("/vendors/{vendor:alpha}/opensource")]
-    public async Task<ActionResult> AddOpenSourceItemToCatalogAsync(
+    public async Task<ActionResult<CatalogItemResponseDetailsModel>> AddOpenSourceItemToCatalogAsync(
         [FromRoute] string vendor,
         [FromBody] CatalogItemRequestModel request) => await AddCatalogItem(request, CatalogItemLicenceTypes.OpenSource, vendor);
 
