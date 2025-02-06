@@ -23,13 +23,15 @@ public class AddingAVendor
             api.StatusCodeShouldBe(201);
         });
 
+        var location = postResponse.Context.Response.Headers.Location.ToString();
+
         var postBody = postResponse.ReadAsJson<VendorDetailsResponseModel>();
 
         Assert.NotNull(postBody);
 
         var getResponse = await host.Scenario(api =>
         {
-            api.Get.Url($"/vendors/{postBody.Id}");
+            api.Get.Url(location);
         });
 
         var getBody = getResponse.ReadAsJson<VendorDetailsResponseModel>();

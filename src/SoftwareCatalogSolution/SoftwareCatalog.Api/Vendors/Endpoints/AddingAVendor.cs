@@ -28,6 +28,6 @@ public static class AddingAVendor
         session.Store(entity);
         await session.SaveChangesAsync();
         var response = entity.MapToModel();
-        return TypedResults.Created("some linky", response);
+        return TypedResults.Created($"/vendors/{response.Id}", response);
     }
 }
