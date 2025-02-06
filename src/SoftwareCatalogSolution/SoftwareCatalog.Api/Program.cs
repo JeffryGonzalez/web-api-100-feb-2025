@@ -1,11 +1,15 @@
 using FluentValidation;
 using Marten;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using SoftwareCatalog.Api.Catalog;
 using SoftwareCatalog.Api.Vendors;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,6 +33,7 @@ builder.Services.AddMarten(config =>
     config.Connection(connectionString);
 }).UseLightweightSessions();
 
+builder.Services.AddFluentValidationRulesToSwagger();
 var app = builder.Build(); // THE LINE IN THE SAND
 // Everything after this line is configuring how the web server handles incoming requests/responses
 // Configure the HTTP request pipeline.
@@ -38,6 +43,7 @@ if (app.Environment.IsDevelopment()) // ASPNETCORE_ENVIRONMENT=Development
     app.UseSwaggerUI(); // GET /swagger/index.html - an html web page that lets you visualize the spec for this api.
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 // Make Some Change
 app.MapControllers(); // this will scan your entire project for any controllers, use the attributes (HttpGet, etc.) to create

@@ -42,8 +42,7 @@ public class VendorDataService(IDocumentSession session) : ICheckForUniqueVendor
 {
     public async Task<bool> CheckUniqueSlug(string slug)
     {
-        return !await session.Query<VendorEntity>().AnyAsync( v => v.Slug == slug);
-
+       return !await session.Query<VendorEntity>().AnyAsync( v => v.Slug == slug);
 
     }
 

@@ -13,6 +13,14 @@ public static class Extensions
 
         services.AddScoped<IValidator<VendorCreateModel>, UpdatedVendorCreateModelValidator>();
         services.AddScoped<ICheckForVendorExistenceForCatalog, VendorDataService>();
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy("canAddVendors", p =>
+            {
+                p.RequireRole("manager");
+                p.RequireRole("software-center");
+            });
+
         return services;
     }
 
@@ -20,7 +28,7 @@ public static class Extensions
     {
         var group = routes.MapGroup("vendors").WithTags("Approved Vendors").WithDescription("The Approved Vendors for the Company");
 
-        group.MapPost("/", AddingAVendor.CanAddVendorAsync);
+        group.MapPost("/", AddingAVendor.CanAddVendorAsync).RequireAuthorization("canAddVendors");
         group.MapGet("/{id}", GettingAVendor.GetVendorAsync).WithTags("Approved Vendors", "Catalog");
         group.MapGet("/", GettingAVendor.GetVendorsAsync);
         return group;

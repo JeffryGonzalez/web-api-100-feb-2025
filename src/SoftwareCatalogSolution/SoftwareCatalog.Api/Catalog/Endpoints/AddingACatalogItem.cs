@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Marten;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SoftwareCatalog.Api.Shared.Catalog;
 using SoftwareCatalog.Api.Vendors;
@@ -9,7 +10,9 @@ namespace SoftwareCatalog.Api.Catalog.Endpoints;
 [Produces("application/json")]
 [ProducesResponseType(201)]
 [ProducesResponseType(400)]
-public class AddingACatalogItem(IDocumentSession session, IValidator<CatalogItemRequestModel> validator, ICheckForVendorExistenceForCatalog catalogChecker) : ControllerBase
+public class AddingACatalogItem(IDocumentSession session, 
+    IValidator<CatalogItemRequestModel> validator, 
+    ICheckForVendorExistenceForCatalog catalogChecker) : ControllerBase
 {
     // GET /catalog/pizza -> 404
 

@@ -1,6 +1,9 @@
 ﻿
 
+using System.Security.Claims;
 using Alba;
+using Alba.Security;
+using NSubstitute;
 using SoftwareCatalog.Api.Vendors;
 
 namespace SoftwareCatalog.Tests.Vendors;
@@ -12,7 +15,11 @@ public class AddingAVendor
     [Fact]
     public async Task CanAddAVendor()
     {
-        var host = await AlbaHost.For<Program>();
+        var fakeIdentity = new AuthenticationStub().WithName("babs")
+            .With(new Claim(ClaimTypes.Role, "manager"))
+            .With(new Claim(ClaimTypes.Role, "software-center"));
+
+        var host = await AlbaHost.For<Program>(fakeIdentity);
 
         var requestModel = new VendorCreateModel
         {
@@ -49,7 +56,11 @@ public class AddingAVendor
     [Fact]
     public async Task InputsAreValidated()
     {
-        var host = await AlbaHost.For<Program>();
+        var fakeIdentity = new AuthenticationStub().WithName("babs")
+            .With(new Claim(ClaimTypes.Role, "manager"))
+            .With(new Claim(ClaimTypes.Role, "software-center"));
+        var host = await AlbaHost.For<Program>(fakeIdentity);
+       
 
 
 

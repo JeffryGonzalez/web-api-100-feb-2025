@@ -21,4 +21,18 @@ public class GettingCatalogItemDetails : ControllerBase
             _ => Ok(item),
         };
     }
+
+    [HttpGet("/catalog")]
+    public async Task<ActionResult> GetCatalogAsync(
+        [FromServices] IDocumentSession session,
+        [FromQuery] string? vendor = null)
+    {
+        var query = session.Query<CatalogItemEntity>();
+
+        if (vendor != null)
+        {
+            query.Where(v => v.Vendor == vendor);
+        }
+        return Ok(await query.ProjectToDetailsModel().ToListAsync());
+    }
 }

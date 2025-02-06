@@ -11,9 +11,14 @@ public static class AddingAVendor
         [FromBody] VendorCreateModel request,
         [FromServices] IValidator<VendorCreateModel> validator,
         [FromServices] IDocumentSession session,
-        [FromServices] VendorSlugGenerator slugGenerator
+        [FromServices] VendorSlugGenerator slugGenerator,
+        [FromServices] IHttpContextAccessor _httpContextAccessor
         )
     {
+
+        //var user = _httpContextAccessor.HttpContext.User; // Don't Do This!!@
+        var sub = _httpContextAccessor.HttpContext.User.Identity.Name;
+        
         var validations = await validator.ValidateAsync(request);
         if (!validations.IsValid)
         {
