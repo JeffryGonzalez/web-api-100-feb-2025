@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SoftwareCatalog.Api.Shared.Catalog;
 using SoftwareCatalog.Api.Vendors.Endpoints;
 
 namespace SoftwareCatalog.Api.Vendors;
@@ -7,8 +8,11 @@ public static class Extensions
 {
     public static IServiceCollection AddVendors(this IServiceCollection services)
     {
+        services.AddScoped<VendorSlugGenerator>();
+        services.AddScoped<ICheckForUniqueVendorSlugs, VendorDataService>();
 
         services.AddScoped<IValidator<VendorCreateModel>, UpdatedVendorCreateModelValidator>();
+        services.AddScoped<ICheckForVendorExistenceForCatalog, VendorDataService>();
         return services;
     }
 
@@ -17,7 +21,8 @@ public static class Extensions
         var group = routes.MapGroup("vendors").WithTags("Approved Vendors").WithDescription("The Approved Vendors for the Company");
 
         group.MapPost("/", AddingAVendor.CanAddVendorAsync);
-        group.MapGet("/{id:guid}", GettingAVendor.GetVendorAsync).WithTags("Approved Vendors", "Catalog");
+        group.MapGet("/{id}", GettingAVendor.GetVendorAsync).WithTags("Approved Vendors", "Catalog");
+        group.MapGet("/", GettingAVendor.GetVendorsAsync);
         return group;
        
     }

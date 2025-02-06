@@ -10,7 +10,8 @@ public static class AddingAVendor
     public static async Task<Results<Created<VendorDetailsResponseModel>, BadRequest>> CanAddVendorAsync(
         [FromBody] VendorCreateModel request,
         [FromServices] IValidator<VendorCreateModel> validator,
-        [FromServices] IDocumentSession session
+        [FromServices] IDocumentSession session,
+        [FromServices] VendorSlugGenerator slugGenerator
         )
     {
         var validations = await validator.ValidateAsync(request);
@@ -22,12 +23,13 @@ public static class AddingAVendor
         {
             Id = Guid.NewGuid(),
             Name = request.Name,
+            Slug = await slugGenerator.GenerateSlugFor(request.Name),
             Link = request.Link,
             CreatedOn = DateTimeOffset.UnixEpoch
         };
         session.Store(entity);
         await session.SaveChangesAsync();
         var response = entity.MapToModel();
-        return TypedResults.Created($"/vendors/{response.Id}", response);
+        return TypedResults.Created($"/vendors/{entity.Slug}", response);
     }
 }

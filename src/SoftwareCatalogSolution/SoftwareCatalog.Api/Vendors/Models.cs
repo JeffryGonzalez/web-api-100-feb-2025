@@ -27,7 +27,7 @@ public class UpdatedVendorCreateModelValidator : AbstractValidator<VendorCreateM
 }
 public record VendorDetailsResponseModel
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Link { get; set; }
     public DateTimeOffset CreatedOn { get; set; }

@@ -4,6 +4,9 @@ using Alba;
 using SoftwareCatalog.Api.Vendors;
 
 namespace SoftwareCatalog.Tests.Vendors;
+
+[Trait("Category", "System")]
+
 public class AddingAVendor
 {
     [Fact]

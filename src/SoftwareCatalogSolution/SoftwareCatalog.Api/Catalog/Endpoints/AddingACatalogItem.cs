@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Marten;
 using Microsoft.AspNetCore.Mvc;
+using SoftwareCatalog.Api.Shared.Catalog;
 using SoftwareCatalog.Api.Vendors;
 
 namespace SoftwareCatalog.Api.Catalog.Endpoints;
@@ -8,7 +9,7 @@ namespace SoftwareCatalog.Api.Catalog.Endpoints;
 [Produces("application/json")]
 [ProducesResponseType(201)]
 [ProducesResponseType(400)]
-public class AddingACatalogItem(IDocumentSession session, IValidator<CatalogItemRequestModel> validator) : ControllerBase
+public class AddingACatalogItem(IDocumentSession session, IValidator<CatalogItemRequestModel> validator, ICheckForVendorExistenceForCatalog catalogChecker) : ControllerBase
 {
     // GET /catalog/pizza -> 404
 
@@ -34,22 +35,28 @@ public class AddingACatalogItem(IDocumentSession session, IValidator<CatalogItem
         // TODO: 1. Do Some validation
         // TODO : 2 save it to the database.
 
-        var validationResults = await validator.ValidateAsync(request);
-
-        if (!validationResults.IsValid)
+        if (await catalogChecker.DoesVendorExistAsync(vendor))
         {
-            return BadRequest(validationResults.ToDictionary()); // 400
+            var validationResults = await validator.ValidateAsync(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToDictionary()); // 400
+            }
+
+            var entityToSave = request.ToCatalogItemEntity(vendor, license);
+
+            session.Store(entityToSave);
+            await session.SaveChangesAsync(); // Do the actual work and save into the database
+
+            // Step 3: send them the response
+            // fake this for right now
+            var response = entityToSave.ToCatalogItemResponseModel();
+            return StatusCode(201, response);
+        } else
+        {
+            return NotFound("Vendor Does Not Exist");
         }
-
-        var entityToSave = request.ToCatalogItemEntity(vendor, license);
-
-        session.Store(entityToSave);
-        await session.SaveChangesAsync(); // Do the actual work and save into the database
-
-        // Step 3: send them the response
-        // fake this for right now
-        var response = entityToSave.ToCatalogItemResponseModel();
-        return StatusCode(201, response);
     }
 }
 
